@@ -1,0 +1,2074 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE BLACK BOX</title>
+
+<style>
+:root {
+    --bg:#10141c;
+    --panel:#1b2330;
+    --panel2:#283446;
+    --border:#465367;
+    --text:#f0f3f8;
+    --muted:#aab5c5;
+    --gold:#d9b56d;
+    --green:#76d5a0;
+    --red:#e47e7e;
+}
+
+* { box-sizing:border-box; }
+
+body {
+    margin:0;
+    min-height:100vh;
+    background:var(--bg);
+    color:var(--text);
+    font-family:Arial,Helvetica,sans-serif;
+    transition:background .35s,color .35s;
+}
+
+button { font:inherit; cursor:pointer; }
+
+button:focus-visible {
+    outline:3px solid #f6d58e;
+    outline-offset:3px;
+}
+
+#game { min-height:100vh; }
+
+.container {
+    width:min(1100px,94%);
+    margin:auto;
+    padding:24px 0;
+}
+
+.topbar {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-bottom:20px;
+}
+
+.logo {
+    font-size:.85rem;
+    font-weight:900;
+    letter-spacing:.25em;
+    color:var(--muted);
+}
+
+.tag {
+    border:1px solid var(--border);
+    padding:8px 13px;
+    border-radius:30px;
+    font-size:.75rem;
+    color:var(--muted);
+}
+
+.panel {
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:17px;
+    padding:25px;
+    box-shadow:0 15px 40px #0005;
+    margin-bottom:16px;
+}
+
+h1 {
+    font-size:clamp(3rem,10vw,7rem);
+    line-height:.86;
+    letter-spacing:-.075em;
+    margin:15px 0 25px;
+}
+
+h2 {
+    font-size:clamp(1.5rem,4vw,2.5rem);
+    margin-top:0;
+}
+
+h3 { margin-top:0; }
+
+p {
+    line-height:1.6;
+    color:var(--muted);
+}
+
+.eyebrow {
+    font-size:.75rem;
+    font-weight:900;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    color:var(--gold);
+}
+
+.hero {
+    min-height:470px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:clamp(25px,7vw,75px);
+    background:
+        radial-gradient(ellipse at 75% 20%,#42434a,transparent 45%),
+        linear-gradient(135deg,#202632,#10141c);
+}
+
+.subtitle {
+    font-size:1.15rem;
+    max-width:650px;
+}
+
+.actions {
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:20px;
+}
+
+.btn {
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:var(--panel2);
+    color:var(--text);
+    padding:12px 17px;
+    font-size:.95rem;
+    font-weight:800;
+    transition:.15s;
+}
+
+.btn:hover {
+    transform:translateY(-2px);
+    filter:brightness(1.2);
+}
+
+.btn.primary {
+    background:var(--gold);
+    border-color:var(--gold);
+    color:#171717;
+}
+
+.btn.success {
+    background:#285b42;
+    border-color:#4a9b70;
+}
+
+.btn.danger {
+    background:#542e37;
+    border-color:#854b58;
+}
+
+.btn:disabled {
+    opacity:.4;
+    cursor:not-allowed;
+    transform:none;
+}
+
+.grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+    gap:15px;
+}
+
+.campaign {
+    min-height:250px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+}
+
+.campaign.brass {
+    background:linear-gradient(145deg,#171c26,#303442);
+    border-color:#75664e;
+}
+
+.campaign.woodwind {
+    background:linear-gradient(145deg,#fff3cb,#f5c49f);
+    color:#483426;
+    border-color:#e5b47c;
+}
+
+.campaign.woodwind p { color:#755b46; }
+.campaign.woodwind .eyebrow { color:#a65e34; }
+
+.campaign.woodwind .btn {
+    background:#fff0d4;
+    color:#563c29;
+    border-color:#dca76e;
+}
+
+.scene {
+    min-height:210px;
+    padding:24px;
+    border:1px solid var(--border);
+    border-radius:15px;
+    background:linear-gradient(140deg,#303847,#171d27);
+    margin-bottom:16px;
+}
+
+.scene-label {
+    font-size:.75rem;
+    font-weight:900;
+    letter-spacing:.17em;
+    text-transform:uppercase;
+    color:var(--gold);
+}
+
+.scene h2 { margin-top:20px; }
+
+.two-column {
+    display:grid;
+    grid-template-columns:1.3fr .7fr;
+    gap:15px;
+}
+
+.stat-row {
+    display:flex;
+    flex-wrap:wrap;
+    gap:9px;
+    margin:14px 0;
+}
+
+.stat {
+    padding:10px 13px;
+    background:#111823;
+    border:1px solid var(--border);
+    border-radius:9px;
+    font-size:.9rem;
+}
+
+.stat strong { color:white; }
+
+.item {
+    padding:12px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:#141b25;
+    margin-bottom:8px;
+}
+
+.item small { color:var(--muted); }
+
+.choice {
+    display:block;
+    width:100%;
+    text-align:left;
+    padding:14px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:#18212d;
+    color:var(--text);
+    margin:9px 0;
+    line-height:1.4;
+}
+
+.choice:hover { background:#303e51; }
+
+.notice {
+    border-left:4px solid var(--gold);
+    background:#252c37;
+    padding:13px;
+    border-radius:7px;
+    line-height:1.5;
+}
+
+.footer {
+    text-align:center;
+    color:var(--muted);
+    font-size:.8rem;
+    margin-top:22px;
+}
+
+.sound-toggle {
+    position:fixed;
+    bottom:15px;
+    right:15px;
+    z-index:5;
+    border:1px solid var(--border);
+    background:#1c2532;
+    color:white;
+    padding:10px 14px;
+    border-radius:30px;
+    box-shadow:0 5px 20px #0006;
+}
+
+.modal-background {
+    position:fixed;
+    inset:0;
+    background:#000b;
+    display:grid;
+    place-items:center;
+    padding:18px;
+    z-index:10;
+}
+
+.modal {
+    width:min(650px,100%);
+    max-height:85vh;
+    overflow-y:auto;
+    padding:25px;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:17px;
+    box-shadow:0 20px 70px #0009;
+}
+
+.woodwind {
+    background:#fff1d2;
+    color:#493527;
+}
+
+.woodwind .logo { color:#906e4d; }
+
+.woodwind .panel {
+    background:#fff9e9;
+    border-color:#e9c28d;
+}
+
+.woodwind .scene {
+    background:linear-gradient(135deg,#ffe7b8,#f7c6a3);
+    border-color:#e5b77e;
+    color:#493527;
+}
+
+.woodwind .scene p { color:#765b44; }
+.woodwind .scene-label,
+.woodwind .eyebrow { color:#a45e35; }
+
+.woodwind .stat {
+    background:#fff0d2;
+    color:#493527;
+    border-color:#e8c18c;
+}
+
+.woodwind .stat strong { color:#493527; }
+
+.woodwind .item,
+.woodwind .choice {
+    background:#fff0d4;
+    color:#493527;
+    border-color:#e6bf8c;
+}
+
+.woodwind .choice:hover { background:#ffe2b1; }
+
+.woodwind .notice {
+    background:#fff0d4;
+    color:#493527;
+}
+
+.woodwind .modal {
+    background:#fff9e9;
+    color:#493527;
+    border-color:#e9c28d;
+}
+
+.woodwind .modal p { color:#765b44; }
+
+.woodwind .sound-toggle {
+    background:#fff8e8;
+    color:#493527;
+    border-color:#e9c28d;
+}
+
+/* RHYTHM GAME */
+
+.rhythm-box {
+    background:#fff0d3;
+    border:1px solid #dca76e;
+    border-radius:14px;
+    padding:15px;
+}
+
+.rhythm-header {
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+}
+
+.lanes {
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px;
+    max-width:540px;
+    margin:18px auto 5px;
+}
+
+.lane {
+    height:290px;
+    background:#f5d9ac;
+    border:1px solid #d7ad7c;
+    border-radius:9px;
+    position:relative;
+    overflow:hidden;
+}
+
+.receptor {
+    position:absolute;
+    bottom:13px;
+    left:0;
+    right:0;
+    height:40px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:32px;
+    font-weight:900;
+    color:#674d36;
+    z-index:1;
+    pointer-events:none;
+}
+
+.lane[data-lane="0"] .receptor::after { content:"←"; }
+.lane[data-lane="1"] .receptor::after { content:"↓"; }
+.lane[data-lane="2"] .receptor::after { content:"↑"; }
+.lane[data-lane="3"] .receptor::after { content:"→"; }
+
+.note {
+    position:absolute;
+    left:10%;
+    width:80%;
+    height:22px;
+    border-radius:6px;
+    box-shadow:0 3px 10px #0004;
+    z-index:2;
+    pointer-events:none;
+}
+
+.note-0 { background:#268bc5; }
+.note-1 { background:#e59b26; }
+.note-2 { background:#55a953; }
+.note-3 { background:#bd69aa; }
+
+.lane-labels {
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    max-width:540px;
+    margin:5px auto;
+    text-align:center;
+    font-size:1.2rem;
+    font-weight:900;
+    color:#674d36;
+}
+
+.rhythm-progress {
+    height:9px;
+    background:#e4c69b;
+    border-radius:20px;
+    overflow:hidden;
+    margin:12px 0;
+}
+
+.rhythm-progress span {
+    display:block;
+    height:100%;
+    width:0;
+    background:#b67849;
+}
+
+@media(max-width:720px) {
+    .two-column { grid-template-columns:1fr; }
+    .container { width:94%; padding:14px 0; }
+    .lane { height:245px; }
+}
+</style>
+</head>
+
+<body>
+<div id="game"></div>
+<div id="modal-root"></div>
+<button class="sound-toggle" id="sound-toggle">🔊 Sound ON</button>
+
+<script>
+"use strict";
+
+/* AUDIO SYSTEM */
+
+let audioContext = null;
+let soundEnabled = true;
+
+function audioReady() {
+    if (!audioContext) {
+        const AudioContextClass =
+            window.AudioContext || window.webkitAudioContext;
+
+        if (AudioContextClass) {
+            audioContext = new AudioContextClass();
+        }
+    }
+
+    if (audioContext && audioContext.state === "suspended") {
+        audioContext.resume();
+    }
+}
+
+function tone(frequency, duration, type="sine", volume=.06, delay=0) {
+    if (!soundEnabled) return;
+
+    audioReady();
+    if (!audioContext) return;
+
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(
+        frequency,
+        audioContext.currentTime + delay
+    );
+
+    gain.gain.setValueAtTime(
+        0,
+        audioContext.currentTime + delay
+    );
+
+    gain.gain.linearRampToValueAtTime(
+        volume,
+        audioContext.currentTime + delay + .015
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        .001,
+        audioContext.currentTime + delay + duration
+    );
+
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+
+    oscillator.start(audioContext.currentTime + delay);
+    oscillator.stop(audioContext.currentTime + delay + duration + .03);
+}
+
+function playSound(name) {
+    if (!soundEnabled) return;
+
+    switch(name) {
+        case "click":
+            tone(520,.07,"sine",.035);
+            break;
+        case "success":
+            tone(523,.18,"sine",.07);
+            tone(659,.18,"sine",.07,.13);
+            tone(784,.3,"sine",.07,.26);
+            break;
+        case "error":
+            tone(190,.22,"triangle",.06);
+            tone(140,.3,"triangle",.05,.17);
+            break;
+        case "clue":
+            tone(660,.1,"sine",.05);
+            tone(880,.2,"sine",.06,.12);
+            break;
+        case "detective":
+            tone(110,.28,"triangle",.08);
+            tone(146,.3,"triangle",.06,.2);
+            break;
+        case "perfect":
+            tone(880,.12,"sine",.06);
+            tone(1100,.13,"sine",.05,.07);
+            break;
+        case "good":
+            tone(660,.13,"sine",.05);
+            break;
+        case "miss":
+            tone(180,.16,"triangle",.045);
+            break;
+        case "woodwind":
+            tone(523,.12,"sine",.045);
+            tone(659,.12,"sine",.045,.12);
+            tone(784,.18,"sine",.045,.24);
+            break;
+    }
+}
+
+document.querySelector("#sound-toggle").addEventListener("click", () => {
+    soundEnabled = !soundEnabled;
+
+    document.querySelector("#sound-toggle").textContent =
+        soundEnabled ? "🔊 Sound ON" : "🔇 Sound OFF";
+
+    if (soundEnabled) {
+        audioReady();
+        playSound("click");
+    }
+});
+
+/* GAME DATA */
+
+const game = document.querySelector("#game");
+const modalRoot = document.querySelector("#modal-root");
+
+const state = {
+    screen:"title",
+    mode:null,
+    brass:null,
+    wood:null,
+    rhythm:null,
+    ending:null
+};
+
+const evidenceBank = [
+    {
+        id:"music",
+        title:"Folded sheet music",
+        description:"A page of music has several difficult measures circled.",
+        clue:"Someone was working on a musical passage."
+    },
+    {
+        id:"metronome",
+        title:"Metronome setting",
+        description:"The metronome is set to a specific rehearsal tempo.",
+        clue:"The tempo setting suggests an organized practice session."
+    },
+    {
+        id:"pencil",
+        title:"Marked pencil",
+        description:"Measure numbers and reminders are written along the pencil.",
+        clue:"Someone was making notes during rehearsal."
+    },
+    {
+        id:"schedule",
+        title:"Room schedule",
+        description:"The schedule lists a woodwind section practice period.",
+        clue:"The Black Box was scheduled for section practice."
+    },
+    {
+        id:"stand",
+        title:"Extra music stand",
+        description:"A music stand has been moved near the hallway.",
+        clue:"Equipment was moved for a rehearsal."
+    },
+    {
+        id:"sound",
+        title:"Muffled scale",
+        description:"You hear a scale being played behind the closed door.",
+        clue:"Someone is clearly practicing an instrument."
+    },
+    {
+        id:"door",
+        title:"Practice-room sign",
+        description:"The sign identifies the Black Box as a practice room.",
+        clue:"The room has a normal, non-mysterious purpose."
+    },
+    {
+        id:"case",
+        title:"Instrument case tag",
+        description:"A case tag has a reminder about section practice.",
+        clue:"Someone brought an instrument to a practice session."
+    }
+];
+
+const suspects = [
+    {
+        name:"Maya",
+        section:"Flute",
+        responses:[
+            "We were practicing. That's what band is for.",
+            "I don't know why this is a whole investigation.",
+            "I was working on my music. Very mysterious, apparently."
+        ]
+    },
+    {
+        name:"Eli",
+        section:"Clarinet",
+        responses:[
+            "I was doing normal band things.",
+            "The room has good acoustics. That's all.",
+            "Can I go back to rehearsal now?"
+        ]
+    },
+    {
+        name:"Jordan",
+        section:"Saxophone",
+        responses:[
+            "I have no comment. Except that I was practicing.",
+            "You seem very committed to this mystery.",
+            "It was a normal practice session."
+        ]
+    },
+    {
+        name:"Sam",
+        section:"Oboe",
+        responses:[
+            "I was working on my part.",
+            "This is a dramatic way to ask about practice.",
+            "I don't think you'll believe how ordinary it was."
+        ]
+    },
+    {
+        name:"Riley",
+        section:"Flute",
+        responses:[
+            "Wait, what was the question?",
+            "I was counting rests.",
+            "I think the answer is written in the music."
+        ]
+    }
+];
+
+const sillyTheories = [
+    "The woodwinds formed a secret detective agency.",
+    "They were training for an underground marching competition.",
+    "The music stands organized a meeting without permission.",
+    "They discovered a portal in the lost-and-found closet.",
+    "They were rehearsing a birthday song for the metronome.",
+    "The clarinets challenged the flutes to a staring contest.",
+    "They were testing whether the room echoes in 7/8.",
+    "They followed a suspicious trail of pencil shavings.",
+    "They were teaching the chairs how to conduct."
+];
+
+const woodwindQuestions = [
+    {
+        question:"Where did everyone go?",
+        options:[
+            ["We went to the Black Box for section practice.",2],
+            ["We were training the music stands to walk.",0],
+            ["What is a Black Box? Never heard of it.",-1]
+        ]
+    },
+    {
+        question:"Why did everyone leave together?",
+        options:[
+            ["It was our scheduled practice time.",2],
+            ["A very organized coincidence.",1],
+            ["The chairs told us to leave.",0]
+        ]
+    },
+    {
+        question:"What were you doing in there?",
+        options:[
+            ["Playing scales and working on our music.",2],
+            ["Practicing how to look mysterious.",0],
+            ["Probably something normal. Definitely.",1]
+        ]
+    },
+    {
+        question:"Anything else I should know?",
+        options:[
+            ["We had a productive practice. Can we go back now?",2],
+            ["Please stop investigating the metronome.",1],
+            ["I plead the fifth measure.",0]
+        ]
+    }
+];
+
+/* UTILITIES */
+
+function shuffle(array) {
+    const copy = [...array];
+
+    for (let i=copy.length-1; i>0; i--) {
+        const j=Math.floor(Math.random()*(i+1));
+        [copy[i],copy[j]]=[copy[j],copy[i]];
+    }
+
+    return copy;
+}
+
+function randomItem(array) {
+    return array[Math.floor(Math.random()*array.length)];
+}
+
+function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g,c=>({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#39;"
+    })[c]);
+}
+
+function setMode(mode) {
+    state.mode=mode;
+    document.body.className =
+        mode==="woodwind" ? "woodwind" : "";
+}
+
+function topbar(label) {
+    return `
+        <div class="topbar">
+            <div class="logo">THE BLACK BOX</div>
+            <div class="tag">${label}</div>
+        </div>
+    `;
+}
+
+function showModal(title,content,buttons="") {
+    modalRoot.innerHTML=`
+        <div class="modal-background">
+            <section class="modal" role="dialog" aria-modal="true">
+                <h2>${title}</h2>
+                <div>${content}</div>
+                <div class="actions">
+                    ${buttons || `
+                        <button class="btn primary"
+                            data-action="close-modal">
+                            Continue
+                        </button>
+                    `}
+                </div>
+            </section>
+        </div>
+    `;
+}
+
+function closeModal() {
+    modalRoot.innerHTML="";
+}
+
+/* TITLE AND CAMPAIGN SELECTION */
+
+function render() {
+    document.body.className =
+        state.mode==="woodwind" ? "woodwind" : "";
+
+    if(state.screen==="title") titleScreen();
+    if(state.screen==="select") selectScreen();
+    if(state.screen==="brass") brassScreen();
+    if(state.screen==="wood") woodScreen();
+    if(state.screen==="rhythm") rhythmScreen();
+    if(state.screen==="ending") endingScreen();
+}
+
+function titleScreen() {
+    game.innerHTML=`
+        <main class="container">
+            ${topbar("A SCHOOL BAND MYSTERY")}
+
+            <section class="panel hero">
+                <div class="eyebrow">Two campaigns · Two perspectives</div>
+                <h1>THE<br>BLACK<br>BOX</h1>
+
+                <p class="subtitle">
+                    One room. Two sides of the band.
+                    One extremely ordinary explanation.
+                </p>
+
+                <p>
+                    The woodwinds have disappeared from the band room.
+                    A brass player wants answers.
+                    The woodwinds are just trying to practice.
+                </p>
+
+                <div class="actions">
+                    <button class="btn primary" data-action="start">
+                        START GAME
+                    </button>
+                </div>
+            </section>
+
+            <div class="footer">
+                A school-band mystery. Or possibly just a normal school day.
+            </div>
+        </main>
+    `;
+}
+
+function selectScreen() {
+    game.innerHTML=`
+        <main class="container">
+            ${topbar("SELECT CAMPAIGN")}
+
+            <h2>Choose your side.</h2>
+            <p>The same day. Two completely different experiences.</p>
+
+            <div class="grid">
+                <section class="panel campaign brass">
+                    <div>
+                        <div class="eyebrow">Campaign 01 · Detective story</div>
+                        <h2>BRASS</h2>
+                        <p>
+                            Become a serious detective. Search for clues,
+                            investigate the hallway, use your bathroom
+                            requests carefully, and interrogate the woodwinds.
+                        </p>
+                    </div>
+
+                    <button class="btn primary" data-action="brass-start">
+                        BEGIN INVESTIGATION
+                    </button>
+                </section>
+
+                <section class="panel campaign woodwind">
+                    <div>
+                        <div class="eyebrow">Campaign 02 · Practice day</div>
+                        <h2>WOODWIND</h2>
+                        <p>
+                            Have a cheerful practice day in the Black Box.
+                            Play rhythm games, return to band, and try to
+                            keep the detective from overthinking everything.
+                        </p>
+                    </div>
+
+                    <button class="btn" data-action="wood-start">
+                        START PRACTICE
+                    </button>
+                </section>
+            </div>
+
+            <div class="actions">
+                <button class="btn" data-action="title">Back</button>
+            </div>
+        </main>
+    `;
+}
+
+/* BRASS CAMPAIGN */
+
+function startBrass() {
+    setMode("brass");
+
+    const randomized=shuffle(evidenceBank);
+
+    state.brass={
+        phase:"class",
+        bathroomRequests:0,
+        found:[],
+        roomClues:randomized.slice(0,3),
+        hallClues:randomized.slice(3),
+        suspects:shuffle(suspects),
+        interviewed:{},
+        log:[
+            "The woodwinds have disappeared.",
+            "Their chairs are empty.",
+            "The investigation begins."
+        ],
+        answerOptions:[]
+    };
+
+    state.screen="brass";
+    playSound("detective");
+    render();
+}
+
+function brassScreen() {
+    const b=state.brass;
+    let content="";
+
+    if(b.phase==="class") {
+        content=`
+            <section class="scene">
+                <div class="scene-label">Band room · 9:17 AM</div>
+                <h2>The woodwinds are gone.</h2>
+                <p>
+                    Their chairs are empty. Their music is missing.
+                    You put on your detective hat.
+                    This case will not solve itself.
+                </p>
+            </section>
+
+            <div class="stat-row">
+                <div class="stat">
+                    Clues: <strong>${b.found.length}</strong>
+                </div>
+                <div class="stat">
+                    Bathroom requests:
+                    <strong>${b.bathroomRequests}/5</strong>
+                </div>
+            </div>
+
+            <div class="two-column">
+                <section class="panel">
+                    <h3>Investigate the band room</h3>
+                    <p>Search for anything unusual.</p>
+
+                    <div class="actions">
+                        <button class="btn" data-action="search-room">
+                            Search the room
+                        </button>
+
+                        <button class="btn" data-action="ask-bathroom">
+                            Ask Mrs. Band to use the bathroom
+                        </button>
+
+                        <button class="btn" data-action="end-class">
+                            Class ends · Call woodwinds
+                        </button>
+                    </div>
+                </section>
+
+                <section class="panel">
+                    <h3>Detective notebook</h3>
+                    ${b.log.slice(-5).map(line=>`
+                        <div class="item">${escapeHTML(line)}</div>
+                    `).join("")}
+                </section>
+            </div>
+        `;
+    }
+
+    if(b.phase==="hall") {
+        content=`
+            <section class="scene">
+                <div class="scene-label">School hallway · Investigation window</div>
+                <h2>You have left band.</h2>
+                <p>
+                    You have a short window before returning to class.
+                    The Black Box is nearby. You can investigate outside,
+                    but you cannot enter it. You're a brass player.
+                </p>
+            </section>
+
+            <div class="stat-row">
+                <div class="stat">
+                    Bathroom requests:
+                    <strong>${b.bathroomRequests}/5</strong>
+                </div>
+                <div class="stat">
+                    Clues collected:
+                    <strong>${b.found.length}</strong>
+                </div>
+            </div>
+
+            <section class="panel">
+                <h3>Where do you investigate?</h3>
+
+                <div class="grid">
+                    <button class="btn" data-action="inspect-hall">
+                        Noticeboard
+                    </button>
+
+                    <button class="btn" data-action="inspect-door">
+                        Outside the Black Box
+                    </button>
+
+                    <button class="btn" data-action="listen-door">
+                        Listen at the door
+                    </button>
+
+                    <button class="btn primary" data-action="return-class">
+                        Return to band
+                    </button>
+                </div>
+
+                <p>
+                    The Black Box door remains closed.
+                    You cannot enter.
+                </p>
+            </section>
+        `;
+    }
+
+    if(b.phase==="interrogate") {
+        const remaining=b.suspects.filter(
+            suspect=>!b.interviewed[suspect.name]
+        );
+
+        content=`
+            <section class="scene">
+                <div class="scene-label">Ensemble room · After class</div>
+                <h2>The woodwinds have returned.</h2>
+                <p>
+                    You call them into the ensemble room.
+                    They seem to think this is a perfectly normal afternoon.
+                    Suspicious.
+                </p>
+            </section>
+
+            <div class="stat-row">
+                <div class="stat">
+                    Interviewed:
+                    <strong>
+                        ${Object.keys(b.interviewed).length}/${b.suspects.length}
+                    </strong>
+                </div>
+
+                <div class="stat">
+                    Clues: <strong>${b.found.length}</strong>
+                </div>
+            </div>
+
+            <section class="panel">
+                <h3>Choose someone to question</h3>
+
+                <div class="grid">
+                    ${remaining.map(suspect=>`
+                        <button class="btn"
+                            data-action="interview"
+                            data-name="${escapeHTML(suspect.name)}">
+                            ${escapeHTML(suspect.name)} ·
+                            ${escapeHTML(suspect.section)}
+                        </button>
+                    `).join("")}
+                </div>
+
+                ${Object.entries(b.interviewed).map(([name,response])=>`
+                    <div class="item">
+                        <strong>${escapeHTML(name)}</strong>
+                        <br>
+                        <small>${escapeHTML(response)}</small>
+                    </div>
+                `).join("")}
+            </section>
+        `;
+    }
+
+    game.innerHTML=`
+        <main class="container">
+            ${topbar("BRASS · DETECTIVE MODE")}
+            ${content}
+
+            <div class="actions">
+                <button class="btn danger" data-action="end-case">
+                    END CASE
+                </button>
+
+                <button class="btn" data-action="title">
+                    Main menu
+                </button>
+            </div>
+
+            <div class="footer">
+                A serious investigation into a very ordinary school activity.
+            </div>
+        </main>
+    `;
+}
+
+function collectClue(clue) {
+    const b=state.brass;
+
+    if(!clue) return;
+
+    if(b.found.includes(clue.id)) {
+        showModal(
+            "Already investigated",
+            "You've already collected the evidence from this location."
+        );
+        return;
+    }
+
+    b.found.push(clue.id);
+    b.log.push("Evidence collected: "+clue.title+".");
+
+    playSound("clue");
+
+    showModal(
+        "EVIDENCE COLLECTED",
+        `
+            <h3>${escapeHTML(clue.title)}</h3>
+            <p>${escapeHTML(clue.description)}</p>
+            <div class="notice">${escapeHTML(clue.clue)}</div>
+        `
+    );
+
+    render();
+}
+
+function searchRoom() {
+    const b=state.brass;
+    const available=b.roomClues.filter(
+        clue=>!b.found.includes(clue.id)
+    );
+
+    if(!available.length) {
+        showModal(
+            "Nothing else here",
+            "You've searched the band room thoroughly."
+        );
+        return;
+    }
+
+    collectClue(randomItem(available));
+}
+
+function askBathroom() {
+    const b=state.brass;
+
+    if(b.bathroomRequests>=5) {
+        showModal(
+            "Mrs. Band refuses",
+            `
+                <p>
+                    “You've asked five times already.
+                    You're staying in class.”
+                </p>
+                <div class="notice">
+                    Your investigation is over for today.
+                </div>
+            `,
+            `<button class="btn primary" data-action="bathroom-fail">
+                Accept defeat
+            </button>`
+        );
+        return;
+    }
+
+    b.bathroomRequests++;
+
+    const messages=[
+        "Mrs. Band lets you go, but reminds you to come straight back.",
+        "Mrs. Band looks up. “Again? All right, make it quick.”",
+        "Mrs. Band raises an eyebrow but allows it.",
+        "Mrs. Band pauses before nodding. “You have five minutes.”",
+        "Mrs. Band gives you a long look. “This is your fifth request. Make it count.”"
+    ];
+
+    b.log.push("Bathroom request "+b.bathroomRequests+" approved.");
+    b.phase="hall";
+
+    showModal(
+        "Permission granted",
+        `<p>${messages[b.bathroomRequests-1]}</p>
+         <p>You have left the band room.</p>`
+    );
+
+    render();
+}
+
+function inspectHall() {
+    const b=state.brass;
+    const available=b.hallClues.filter(
+        clue=>!b.found.includes(clue.id)
+    );
+
+    if(!available.length) {
+        showModal("Hallway searched","Nothing new catches your attention.");
+        return;
+    }
+
+    collectClue(randomItem(available));
+}
+
+function inspectDoor() {
+    const clue=evidenceBank.find(item=>item.id==="door");
+
+    if(!state.brass.found.includes(clue.id)) {
+        collectClue(clue);
+    } else {
+        showModal(
+            "Outside the Black Box",
+            "You examine the door again. It is still closed. You are still not allowed inside."
+        );
+    }
+}
+
+function listenDoor() {
+    const clue=evidenceBank.find(item=>item.id==="sound");
+
+    if(!state.brass.found.includes(clue.id)) {
+        collectClue(clue);
+    } else {
+        showModal(
+            "You listen again",
+            "You hear more music. It still sounds like practice."
+        );
+    }
+}
+
+function returnToClass() {
+    state.brass.phase="class";
+    state.brass.log.push("You returned to band.");
+    render();
+}
+
+function interviewSuspect(name) {
+    const suspect=state.brass.suspects.find(
+        item=>item.name===name
+    );
+
+    if(!suspect) return;
+
+    const response=randomItem(suspect.responses);
+
+    state.brass.interviewed[name]=response;
+    state.brass.log.push(name+" was interviewed.");
+
+    playSound("detective");
+
+    showModal(
+        suspect.name+" · "+suspect.section,
+        `
+            <p><strong>DETECTIVE:</strong> Where were you?</p>
+            <p><strong>${escapeHTML(suspect.name)}:</strong>
+            “${escapeHTML(response)}”</p>
+            <p><em>The answer is not especially helpful.</em></p>
+        `
+    );
+
+    render();
+}
+
+function startInterrogations() {
+    state.brass.phase="interrogate";
+    state.brass.log.push("Class has ended. The woodwinds returned.");
+    render();
+}
+
+/* END CASE */
+
+function endCase() {
+    const answers=shuffle([
+        "They went to practice in the Black Box.",
+        ...sillyTheories
+    ]);
+
+    state.brass.answerOptions=answers;
+
+    showModal(
+        "END THE CASE",
+        `
+            <p>
+                Select your final explanation.
+                Evidence can help, but you do not need every clue.
+            </p>
+
+            ${answers.map((answer,index)=>`
+                <button class="choice"
+                    data-action="answer"
+                    data-index="${index}">
+                    ${String.fromCharCode(65+index)}.
+                    ${escapeHTML(answer)}
+                </button>
+            `).join("")}
+        `
+    );
+}
+
+function chooseAnswer(index) {
+    const chosen=state.brass.answerOptions[index];
+    closeModal();
+
+    if(chosen==="They went to practice in the Black Box.") {
+        playSound("success");
+
+        finish(
+            "brass",
+            true,
+            "CASE SOLVED",
+            "The woodwinds went to practice in the Black Box. The evidence was real. The mystery was not. Mrs. Band tells you to put away the detective notebook and get back to band."
+        );
+    } else {
+        playSound("error");
+
+        finish(
+            "brass",
+            false,
+            "CASE UNSOLVED",
+            "Your theory was creative, but the woodwinds were simply practicing in the Black Box. The case remains unsolved."
+        );
+    }
+}
+
+/* WOODWIND CAMPAIGN */
+
+function startWoodwind() {
+    setMode("woodwind");
+
+    state.wood={
+        phase:"arrival",
+        songs:shuffle([
+            "Warm-up in C",
+            "Scale Run",
+            "The Long Rehearsal"
+        ]),
+        completed:[],
+        dialogueIndex:0,
+        score:0,
+        answers:[]
+    };
+
+    state.screen="wood";
+    playSound("woodwind");
+    render();
+}
+
+function woodScreen() {
+    const w=state.wood;
+    let content="";
+
+    if(w.phase==="arrival") {
+        content=`
+            <section class="scene">
+                <div class="scene-label">Band room · A bright morning</div>
+                <h2>Time for section practice!</h2>
+                <p>
+                    The woodwind section heads to the Black Box.
+                    You bring your instrument and music.
+                    It's just a normal practice day.
+                </p>
+            </section>
+
+            <section class="panel">
+                <h3>Head into the Black Box</h3>
+                <p>
+                    Practice your parts with rhythm challenges.
+                    Follow the notes as they reach the bottom of the lanes.
+                </p>
+
+                <button class="btn primary" data-action="enter-box">
+                    GO TO BLACK BOX
+                </button>
+            </section>
+        `;
+    }
+
+    if(w.phase==="songs") {
+        content=`
+            <section class="scene">
+                <div class="scene-label">The Black Box · Practice time</div>
+                <h2>Let's run through the music.</h2>
+                <p>
+                    Choose a practice track. Press the matching
+                    keyboard arrow when each note reaches its target.
+                </p>
+            </section>
+
+            <section class="panel">
+                <div class="stat-row">
+                    <div class="stat">
+                        Tracks practiced:
+                        <strong>${w.completed.length}/3</strong>
+                    </div>
+                </div>
+
+                <h3>Practice tracks</h3>
+
+                <div class="grid">
+                    ${w.songs.map(song=>`
+                        <button class="btn
+                            ${w.completed.includes(song)?"success":""}"
+                            data-action="play-song"
+                            data-song="${escapeHTML(song)}"
+                            ${w.completed.includes(song)?"disabled":""}>
+                            ${escapeHTML(song)}
+                            ${w.completed.includes(song)?" ✓":""}
+                        </button>
+                    `).join("")}
+                </div>
+
+                <div class="actions">
+                    <button class="btn primary"
+                        data-action="leave-box"
+                        ${w.completed.length===0?"disabled":""}>
+                        RETURN TO BAND ROOM
+                    </button>
+                </div>
+            </section>
+        `;
+    }
+
+    if(w.phase==="ensemble") {
+        content=`
+            <section class="scene">
+                <div class="scene-label">Band room · Later</div>
+                <h2>Back to the usual routine.</h2>
+                <p>
+                    You return from practice. Then the brass detective
+                    calls the woodwinds into the ensemble room.
+                    Apparently, there are questions.
+                </p>
+            </section>
+
+            <section class="panel">
+                <h3>Go to the ensemble room</h3>
+                <p>
+                    Time to answer some very dramatic questions
+                    about a very normal practice session.
+                </p>
+
+                <button class="btn primary" data-action="go-interview">
+                    GO TO ENSEMBLE ROOM
+                </button>
+            </section>
+        `;
+    }
+
+    if(w.phase==="dialogue") {
+        const question=woodwindQuestions[w.dialogueIndex];
+
+        content=`
+            <section class="scene">
+                <div class="scene-label">Ensemble room · Interview</div>
+                <h2>The detective has questions.</h2>
+                <p>
+                    Keep the conversation casual.
+                    Don't accidentally make a simple practice session
+                    sound like a conspiracy.
+                </p>
+            </section>
+
+            <section class="panel">
+                <div class="eyebrow">
+                    Conversation ${w.dialogueIndex+1}
+                    of ${woodwindQuestions.length}
+                </div>
+
+                <h3>${escapeHTML(question.question)}</h3>
+
+                ${question.options.map((option,index)=>`
+                    <button class="choice"
+                        data-action="wood-answer"
+                        data-index="${index}">
+                        ${escapeHTML(option[0])}
+                    </button>
+                `).join("")}
+            </section>
+        `;
+    }
+
+    game.innerHTML=`
+        <main class="container">
+            ${topbar("WOODWIND · PRACTICE DAY")}
+            ${content}
+
+            <div class="actions">
+                <button class="btn" data-action="title">Main menu</button>
+            </div>
+
+            <div class="footer">
+                A cheerful day. A slightly overactive detective.
+            </div>
+        </main>
+    `;
+}
+
+function answerWoodwind(index) {
+    const w=state.wood;
+    const question=woodwindQuestions[w.dialogueIndex];
+    const option=question.options[index];
+
+    w.score+=option[1];
+    w.answers.push(option[0]);
+    w.dialogueIndex++;
+
+    playSound("click");
+
+    if(w.dialogueIndex>=woodwindQuestions.length) {
+        const won=w.score>=5;
+
+        if(won) playSound("success");
+        else playSound("error");
+
+        finish(
+            "woodwind",
+            won,
+            won?"SECRET SAFE":"SECRET SPILLED",
+            won
+                ? "You keep the conversation casual, answer clearly, and the detective accepts that the woodwinds went to practice. The secret stays safe from further investigation."
+                : "One answer was a little too strange. The detective connects the clues and figures out that everyone practiced in the Black Box. At least the practice went well."
+        );
+    } else {
+        render();
+    }
+}
+
+/* RHYTHM GAME — FALLING NOTES */
+
+let rhythmInterval=null;
+
+const arrowKeys={
+    ArrowLeft:0,
+    ArrowDown:1,
+    ArrowUp:2,
+    ArrowRight:3
+};
+
+const RHYTHM_TRAVEL_TIME=1800;
+const RHYTHM_HIT_WINDOW=180;
+const RHYTHM_NOTE_SPACING=620;
+
+function startRhythm(song) {
+    clearInterval(rhythmInterval);
+
+    const pattern=[
+        0,1,2,3,1,0,3,2,
+        0,2,1,3,3,1,0,2,
+        1,3,2,0,0,1,3,2
+    ];
+
+    const notes=pattern.map((lane,index)=>({
+        lane,
+        time:RHYTHM_TRAVEL_TIME+index*RHYTHM_NOTE_SPACING,
+        hit:false,
+        missed:false
+    }));
+
+    state.rhythm={
+        song,
+        notes,
+        score:0,
+        combo:0,
+        bestCombo:0,
+        misses:0,
+        hits:0,
+        started:Date.now(),
+        active:true
+    };
+
+    state.wood.currentSong=song;
+    state.screen="rhythm";
+
+    audioReady();
+    render();
+    startRhythmLoop();
+}
+
+function rhythmScreen() {
+    const r=state.rhythm;
+
+    game.innerHTML=`
+        <main class="container">
+            ${topbar("WOODWIND · RHYTHM PRACTICE")}
+
+            <section class="panel">
+                <div class="rhythm-header">
+                    <div>
+                        <div class="eyebrow">Now playing</div>
+                        <h2>${escapeHTML(r.song)}</h2>
+                    </div>
+
+                    <div class="stat-row">
+                        <div class="stat">
+                            Score: <strong id="score">${r.score}</strong>
+                        </div>
+                        <div class="stat">
+                            Combo: <strong id="combo">${r.combo}</strong>
+                        </div>
+                        <div class="stat">
+                            Misses: <strong id="misses">${r.misses}</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rhythm-box">
+                    <p>
+                        Notes fall from the top. Press the matching
+                        keyboard arrow when each note reaches its target.
+                        <strong>← ↓ ↑ →</strong>
+                    </p>
+
+                    <div class="lanes" id="lanes">
+                        ${[0,1,2,3].map(lane=>`
+                            <div class="lane" data-lane="${lane}">
+                                <div class="receptor"></div>
+                            </div>
+                        `).join("")}
+                    </div>
+
+                    <div class="lane-labels">
+                        <span>←</span>
+                        <span>↓</span>
+                        <span>↑</span>
+                        <span>→</span>
+                    </div>
+                </div>
+
+                <div class="rhythm-progress">
+                    <span id="song-progress"></span>
+                </div>
+
+                <p id="feedback">
+                    Get ready. The first notes are coming!
+                </p>
+
+                <button class="btn" data-action="quit-song">
+                    Leave practice track
+                </button>
+            </section>
+        </main>
+    `;
+}
+
+function startRhythmLoop() {
+    clearInterval(rhythmInterval);
+
+    rhythmInterval=setInterval(()=>{
+        const r=state.rhythm;
+
+        if(!r||!r.active) {
+            clearInterval(rhythmInterval);
+            return;
+        }
+
+        const elapsed=Date.now()-r.started;
+        const lastNoteTime=r.notes[r.notes.length-1].time;
+        const duration=lastNoteTime+900;
+
+        const laneContainer=document.querySelector("#lanes");
+
+        if(!laneContainer) {
+            clearInterval(rhythmInterval);
+            return;
+        }
+
+        laneContainer.querySelectorAll(".note").forEach(note=>{
+            note.remove();
+        });
+
+        r.notes.forEach(note=>{
+            const difference=elapsed-note.time;
+
+            if(
+                !note.hit &&
+                !note.missed &&
+                difference>RHYTHM_HIT_WINDOW
+            ) {
+                note.missed=true;
+                r.misses++;
+                r.combo=0;
+                updateRhythmStats();
+            }
+
+            if(
+                !note.hit &&
+                !note.missed &&
+                difference>=-RHYTHM_TRAVEL_TIME &&
+                difference<=RHYTHM_HIT_WINDOW
+            ) {
+                const lane=laneContainer.children[note.lane];
+                const visual=document.createElement("div");
+
+                visual.className="note note-"+note.lane;
+
+                const targetTop=lane.clientHeight-44;
+                const progress=
+                    (difference+RHYTHM_TRAVEL_TIME)/
+                    RHYTHM_TRAVEL_TIME;
+
+                const top=-22+progress*(targetTop+22);
+
+                visual.style.top=top+"px";
+                lane.appendChild(visual);
+            }
+        });
+
+        const progressBar=document.querySelector("#song-progress");
+
+        if(progressBar) {
+            progressBar.style.width=
+                Math.min(100,elapsed/duration*100)+"%";
+        }
+
+        if(elapsed>=duration) {
+            finishRhythm();
+        }
+    },25);
+}
+
+function updateRhythmStats() {
+    const r=state.rhythm;
+
+    const score=document.querySelector("#score");
+    const combo=document.querySelector("#combo");
+    const misses=document.querySelector("#misses");
+
+    if(score) score.textContent=r.score;
+    if(combo) combo.textContent=r.combo;
+    if(misses) misses.textContent=r.misses;
+}
+
+function hitLane(lane) {
+    const r=state.rhythm;
+
+    if(!r||!r.active) return;
+
+    const elapsed=Date.now()-r.started;
+
+    const candidates=r.notes
+        .filter(note=>
+            note.lane===lane &&
+            !note.hit &&
+            !note.missed
+        )
+        .sort((a,b)=>
+            Math.abs(a.time-elapsed)-
+            Math.abs(b.time-elapsed)
+        );
+
+    const target=candidates[0];
+
+    if(
+        target &&
+        Math.abs(target.time-elapsed)<=RHYTHM_HIT_WINDOW
+    ) {
+        const difference=Math.abs(target.time-elapsed);
+
+        target.hit=true;
+        r.hits++;
+        r.combo++;
+
+        r.bestCombo=Math.max(r.bestCombo,r.combo);
+
+        if(difference<65) {
+            r.score+=300;
+            setFeedback("PERFECT!");
+            playSound("perfect");
+        } else if(difference<120) {
+            r.score+=180;
+            setFeedback("GREAT!");
+            playSound("good");
+        } else {
+            r.score+=90;
+            setFeedback("GOOD!");
+            playSound("good");
+        }
+    } else {
+        r.misses++;
+        r.combo=0;
+        setFeedback("MISS!");
+        playSound("miss");
+    }
+
+    updateRhythmStats();
+}
+
+function setFeedback(message) {
+    const feedback=document.querySelector("#feedback");
+
+    if(feedback) feedback.textContent=message;
+}
+
+function finishRhythm() {
+    const r=state.rhythm;
+
+    if(!r||!r.active) return;
+
+    r.active=false;
+    clearInterval(rhythmInterval);
+
+    r.notes.forEach(note=>{
+        if(!note.hit&&!note.missed) {
+            note.missed=true;
+            r.misses++;
+        }
+    });
+
+    const accuracy=Math.round(
+        r.hits/r.notes.length*100
+    );
+
+    state.wood.completed.push(r.song);
+    state.wood.phase="songs";
+    state.screen="wood";
+
+    render();
+
+    showModal(
+        "PRACTICE TRACK COMPLETE",
+        `
+            <div class="stat-row">
+                <div class="stat">
+                    Score: <strong>${r.score}</strong>
+                </div>
+                <div class="stat">
+                    Accuracy: <strong>${accuracy}%</strong>
+                </div>
+                <div class="stat">
+                    Best combo: <strong>${r.bestCombo}</strong>
+                </div>
+            </div>
+
+            <p>
+                You finished ${escapeHTML(r.song)}.
+                ${accuracy>=75
+                    ?"That was a strong run!"
+                    :"Good practice. Keep working on the rhythm!"}
+            </p>
+        `
+    );
+}
+
+/* ENDINGS */
+
+function finish(mode,won,title,text) {
+    clearInterval(rhythmInterval);
+
+    state.ending={mode,won,title,text};
+    state.screen="ending";
+
+    render();
+}
+
+function endingScreen() {
+    const ending=state.ending;
+
+    const heading=ending.won
+        ?(ending.mode==="brass"?"CASE<br>SOLVED":"SECRET<br>SAFE")
+        :(ending.mode==="brass"?"CASE<br>UNSOLVED":"SECRET<br>SPILLED");
+
+    game.innerHTML=`
+        <main class="container">
+            ${topbar("CAMPAIGN COMPLETE")}
+
+            <section class="panel hero">
+                <div class="eyebrow">
+                    ${ending.won?"Campaign complete":"Not quite"}
+                </div>
+
+                <h1>${heading}</h1>
+                <h2>${escapeHTML(ending.title)}</h2>
+                <p>${escapeHTML(ending.text)}</p>
+
+                <div class="actions">
+                    <button class="btn primary" data-action="replay">
+                        PLAY AGAIN
+                    </button>
+
+                    <button class="btn" data-action="title">
+                        MAIN MENU
+                    </button>
+                </div>
+            </section>
+        </main>
+    `;
+}
+
+/* GLOBAL CLICK HANDLER */
+
+document.addEventListener("click",event=>{
+    const button=event.target.closest("[data-action]");
+
+    if(!button) return;
+
+    const action=button.dataset.action;
+
+    playSound("click");
+
+    switch(action) {
+        case "start":
+            state.screen="select";
+            render();
+            break;
+
+        case "title":
+            clearInterval(rhythmInterval);
+            closeModal();
+            state.screen="title";
+            state.mode=null;
+            render();
+            break;
+
+        case "brass-start":
+            startBrass();
+            break;
+
+        case "wood-start":
+            startWoodwind();
+            break;
+
+        case "search-room":
+            searchRoom();
+            break;
+
+        case "ask-bathroom":
+            askBathroom();
+            break;
+
+        case "inspect-hall":
+            inspectHall();
+            break;
+
+        case "inspect-door":
+            inspectDoor();
+            break;
+
+        case "listen-door":
+            listenDoor();
+            break;
+
+        case "return-class":
+            closeModal();
+            returnToClass();
+            break;
+
+        case "end-class":
+            closeModal();
+            startInterrogations();
+            break;
+
+        case "interview":
+            interviewSuspect(button.dataset.name);
+            break;
+
+        case "end-case":
+            endCase();
+            break;
+
+        case "answer":
+            chooseAnswer(Number(button.dataset.index));
+            break;
+
+        case "bathroom-fail":
+            closeModal();
+            finish(
+                "brass",
+                false,
+                "INVESTIGATION TERMINATED",
+                "Mrs. Band has had enough bathroom requests for one class period. The investigation is over."
+            );
+            break;
+
+        case "close-modal":
+            closeModal();
+            break;
+
+        case "enter-box":
+            state.wood.phase="songs";
+            render();
+            break;
+
+        case "play-song":
+            startRhythm(button.dataset.song);
+            break;
+
+        case "leave-box":
+            state.wood.phase="ensemble";
+            render();
+            break;
+
+        case "go-interview":
+            state.wood.phase="dialogue";
+            state.wood.dialogueIndex=0;
+            state.wood.score=0;
+            render();
+            break;
+
+        case "wood-answer":
+            answerWoodwind(Number(button.dataset.index));
+            break;
+
+        case "quit-song":
+            clearInterval(rhythmInterval);
+
+            if(state.rhythm) {
+                state.rhythm.active=false;
+            }
+
+            state.wood.phase="songs";
+            state.screen="wood";
+            render();
+            break;
+
+        case "replay":
+            closeModal();
+            state.mode=null;
+            state.screen="select";
+            render();
+            break;
+    }
+});
+
+/* KEYBOARD-ONLY RHYTHM CONTROLS */
+
+document.addEventListener("keydown",event=>{
+    if(state.screen!=="rhythm") return;
+    if(event.repeat) return;
+
+    if(Object.prototype.hasOwnProperty.call(arrowKeys,event.key)) {
+        event.preventDefault();
+        hitLane(arrowKeys[event.key]);
+    }
+});
+
+/* START GAME */
+
+render();
+
+</script>
+</body>
+</html>
